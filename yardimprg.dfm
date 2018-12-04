@@ -4,7 +4,7 @@ object yardimfrm: Tyardimfrm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Yard'#305'm Formu'
-  ClientHeight = 606
+  ClientHeight = 614
   ClientWidth = 651
   Color = 9237198
   Font.Charset = DEFAULT_CHARSET
@@ -130,17 +130,9 @@ object yardimfrm: Tyardimfrm
     Color = clAqua
     Lines.Strings = (
       
-        'sql server ad'#305' : buraya SQL SERVER ad'#305' yaz'#305'lacakt'#305'r. Sql server ' +
-        'ismi genel olarak'
-      
-        'sql kurulu oldu'#287'u bilgisayar'#305'n ismi olur. Sql ismini '#246#287'renmek i'#231 +
-        'in sql kurulu oldu'#287'u'
-      
-        'makinada sa'#287' altta bulunan sql server '#252'zerinde mouse bekletti'#287'in' +
-        'izde xxxxx server'
-      
-        'running diye yazacakt'#305'r. Sql ismini yanl'#305#351' olursa Sql Ba'#287'lan D'#252#287 +
-        'mesine bas'#305'nca renk '
+        'sql server ad'#305' :listeden sql ba'#287'lanmak istedi'#287'iniz sql server'#39#305' ' +
+        'se'#231'in Sql ismini yanl'#305#351' '
+      'olursa Sql Ba'#287'lan D'#252#287'mesine bas'#305'nca renk '
       'ye'#351'il olmayacaktir.'
       '')
     TabOrder = 2
@@ -186,15 +178,19 @@ object yardimfrm: Tyardimfrm
     Text = 'LKSDB'
   end
   object Memo3: TMemo
-    Left = 232
-    Top = 189
+    Left = 231
+    Top = 174
     Width = 401
-    Height = 21
+    Height = 52
     Color = clSkyBlue
     Lines.Strings = (
       
         'Sql server da bulunan ve yedeklemek istedi'#287'imiz dosyan'#305'n(databas' +
-        'e) ad'#305'd'#305'r.')
+        'e) ad'#305'd'#305'r.'
+      
+        'Kullan'#305'c'#305' ad'#305' ve '#351'ifreyi girip ba'#287'lana bast'#305'ktan sonra aktif olu' +
+        'r. Yede'#287'ini alaca'#287#305'n'#305'z '
+      'veritaban'#305'n'#305' listeden se'#231'in')
     TabOrder = 7
   end
   object Edit2: TEdit
@@ -216,9 +212,9 @@ object yardimfrm: Tyardimfrm
         'Yedek al'#305'nacak olan yer ve yedeklenen dosyaya verilen ad'#305'n yaz'#305'l' +
         'd'#305#287#305' b'#246'l'#252'md'#252'r.'
       
-        #304#351'letim sistemi kurallar'#305'na uygun olarak yaz'#305'lmal'#305'd'#305'r. C:\yedek\' +
-        'lksdb.bck gibi'
-      ''
+        'yedek alaca'#287#305'n'#305'z klas'#246'r'#252' yandaki butona basrak veya i'#351'letim sist' +
+        'emi kurallar'#305'na g'#246're '
+      'yazarak se'#231'iniz'
       
         'Databases ismine g'#246're Databases_g'#252'n_ay_y'#305'l  olarak otomatik ekle' +
         'nir.'
@@ -260,18 +256,20 @@ object yardimfrm: Tyardimfrm
     Left = 8
     Top = 481
     Width = 633
-    Height = 89
+    Height = 104
     Color = clAqua
     Lines.Strings = (
       
-        'PROGRAMIN kULLANIMI : Server Ad'#305'n'#305' / Kullan'#305'c'#305' Ad'#305'n'#305' /Kullan'#305'c'#305' ' +
-        #350'ifresini ve database ad'#305'n'#305' girin. Sql Ba'#287'lan D'#252#287'mesine Bas'#305'n '
+        'PROGRAMIN kULLANIMI : Server Ad'#305'n'#305' listeden se'#231'in.  Kullan'#305'c'#305' Ad' +
+        #305'n'#305' /Kullan'#305'c'#305' '#350'ifresini girin. Sql Ba'#287'lan D'#252#287'mesine Bas'#305'n '
       
-        'alttaki mesaj b'#246'l'#252'm'#252'nde xxxxx Servere ba'#287'land'#305' mesaj'#305'n'#305' g'#246'r'#252'r ve' +
-        ' d'#252#287'me kenarlar'#305' ye'#351'il olursa sql server sorunsuz ba'#287'land'#305'n'#305'z'
+        'yedeklenecek veritaban'#305'n'#305'n listeden se'#231'in alttaki mesaj b'#246'l'#252'm'#252'nd' +
+        'e xxxxx Servere ba'#287'land'#305' mesaj'#305'n'#305' g'#246'r'#252'r ve d'#252#287'me kenarlar'#305' ye'#351'il' +
+        ' '
+      'olursa sql server sorunsuz ba'#287'land'#305'n'#305'z'
       
-        'demektir.  Kay'#305't yeri yazan yere yedeklerin al'#305'naca'#287#305' yeri ve ye' +
-        'dek Dosyas'#305'n'#305'n ad'#305'n'#305' yaz'#305'n daha sonra kulklanmak '#252'zere Kaydet'
+        'demektir.  Kay'#305't yeri yazan yerde yedeklerin al'#305'naca'#287#305' yeri se'#231'i' +
+        'n daha sonra kulklanmak '#252'zere Kaydet'
       
         'd'#252#287'mesine bas'#305'n (Kaydetmek zorunda de'#287'ilsiniz) Yedekle D'#252#287'mesine' +
         ' Bas'#305'n Mesaj k'#305'sm'#305'nda yedekleme Ba'#351'lad'#305'. '#287#246'r'#252'lmesi gerekir.'
@@ -290,10 +288,10 @@ object yardimfrm: Tyardimfrm
     TabOrder = 14
   end
   object Memo4: TMemo
-    Left = 232
+    Left = 231
     Top = 328
     Width = 401
-    Height = 65
+    Height = 74
     Lines.Strings = (
       
         'Yedekleme al'#305'nd'#305'ktan sonra al'#305'nan yedek'#39' in s'#305'k'#305#351't'#305'r'#305'l'#305'p s'#305'k'#305#351't'#305 +
@@ -302,16 +300,17 @@ object yardimfrm: Tyardimfrm
         'E'#287'er s'#305'k'#305#351't'#305'r'#305'lma yap'#305'lacak ise s'#305'k'#305#351't'#305'r'#305'lacak olan dosyan'#305'n bil' +
         'gisayarda nereye  '
       
-        'Kaydedilece'#287'i belirtir. Burada verilen bilgiler i'#351'letim sistemi ' +
-        'kurallar'#305'na g'#246're '
+        'Kaydedilece'#287'i belirtir.yedeklenecek yer kutunun yan'#305'ndaki butond' +
+        'an se'#231'ilmeli veya '
       
-        'verilmelidir. D:\database_adi gibi yedekleme tarihini otomatik e' +
-        'kler.')
+        'i'#351'letim sistemi kurallar'#305'na g'#246're verilmelidir. D:\database_adi g' +
+        'ibi yedekleme tarihini '
+      'otomatik ekler. ')
     TabOrder = 15
   end
   object Button1: TButton
     Left = 88
-    Top = 577
+    Top = 588
     Width = 521
     Height = 25
     Caption = 'Kapat'

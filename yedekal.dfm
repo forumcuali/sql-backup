@@ -5,7 +5,7 @@ object yedekfrm: Tyedekfrm
   BorderStyle = bsSingle
   Caption = #199#305'nar Bilgisayar SQL Yedek Alma Program'#305
   ClientHeight = 380
-  ClientWidth = 508
+  ClientWidth = 505
   Color = 15259054
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -22,7 +22,7 @@ object yedekfrm: Tyedekfrm
   object Panel2: TPanel
     Left = 8
     Top = 8
-    Width = 494
+    Width = 489
     Height = 364
     BorderStyle = bsSingle
     Color = clMoneyGreen
@@ -30,10 +30,10 @@ object yedekfrm: Tyedekfrm
     TabOrder = 0
     OnMouseEnter = Panel2MouseEnter
     object Label2: TLabel
-      Left = 9
-      Top = 12
+      Left = 10
+      Top = 13
       Width = 89
-      Height = 13
+      Height = 14
       Alignment = taRightJustify
       AutoSize = False
       Caption = 'Sql Server  Ad'#305
@@ -147,11 +147,11 @@ object yedekfrm: Tyedekfrm
       ParentFont = False
     end
     object Label11: TLabel
-      Left = 361
-      Top = 337
-      Width = 112
+      Left = 352
+      Top = 334
+      Width = 121
       Height = 13
-      Caption = 'Versiyon : 28-11-2018-1'
+      Caption = 'Versiyon : 28-11-2018-1.2'
     end
     object Label5: TLabel
       Left = 5
@@ -168,18 +168,30 @@ object yedekfrm: Tyedekfrm
     end
     object Label6: TLabel
       Left = 280
-      Top = 60
+      Top = 59
       Width = 31
       Height = 13
       Caption = 'G'#246'ster'
       OnClick = Label6Click
     end
-    object server_adi: TEdit
-      Left = 104
-      Top = 9
-      Width = 169
-      Height = 21
-      TabOrder = 0
+    object klasorbuton1: TSpeedButton
+      Left = 317
+      Top = 104
+      Width = 21
+      Height = 23
+      Caption = '...'
+      Spacing = 1
+      OnClick = klasorbuton1Click
+    end
+    object klasorbuton2: TSpeedButton
+      Left = 317
+      Top = 155
+      Width = 21
+      Height = 23
+      Caption = '...'
+      Spacing = 1
+      Visible = False
+      OnClick = klasorbuton2Click
     end
     object kullanici: TEdit
       Left = 105
@@ -187,6 +199,7 @@ object yedekfrm: Tyedekfrm
       Width = 169
       Height = 21
       TabOrder = 1
+      OnExit = kullaniciExit
     end
     object sifre: TEdit
       Left = 105
@@ -195,19 +208,12 @@ object yedekfrm: Tyedekfrm
       Height = 21
       PasswordChar = '*'
       TabOrder = 2
-    end
-    object tablo_adi: TEdit
-      Left = 105
-      Top = 81
-      Width = 169
-      Height = 21
-      TabOrder = 3
-      OnChange = tablo_adiChange
+      OnExit = sifreExit
     end
     object kayit_yeri1: TEdit
-      Left = 104
-      Top = 108
-      Width = 217
+      Left = 105
+      Top = 105
+      Width = 213
       Height = 21
       TabOrder = 4
     end
@@ -221,9 +227,9 @@ object yedekfrm: Tyedekfrm
       OnClick = ziplaClick
     end
     object kayit_yeri2: TEdit
-      Left = 104
+      Left = 105
       Top = 156
-      Width = 217
+      Width = 213
       Height = 21
       Hint = 
         'Sadece Yedeklenecek s'#252'r'#252'c'#252' ad'#305' ve database ad'#305' girin ba'#351'ka bilgi' +
@@ -253,20 +259,6 @@ object yedekfrm: Tyedekfrm
       TabOrder = 8
       OnClick = yukleClick
     end
-    object log_memo: TMemo
-      Left = 9
-      Top = 221
-      Width = 464
-      Height = 103
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -12
-      Font.Name = 'Courier New'
-      Font.Style = []
-      ParentFont = False
-      ScrollBars = ssVertical
-      TabOrder = 9
-    end
     object Panel1: TPanel
       Left = 344
       Top = 9
@@ -277,7 +269,7 @@ object yedekfrm: Tyedekfrm
       Color = clRed
       ParentBackground = False
       ShowCaption = False
-      TabOrder = 10
+      TabOrder = 9
       object baglan: TButton
         Left = 16
         Top = 8
@@ -327,33 +319,61 @@ object yedekfrm: Tyedekfrm
         OnClick = yardimClick
       end
     end
-    object sql_memo: TMemo
-      Left = 106
-      Top = 264
-      Width = 185
-      Height = 18
-      Lines.Strings = (
-        'sql_memo')
-      TabOrder = 11
-      Visible = False
-    end
     object AbProgressBar1: TAbProgressBar
       Left = 105
       Top = 185
-      Width = 216
+      Width = 233
       Height = 26
-      TabOrder = 12
+      TabOrder = 10
+    end
+    object comboserver: TComboBox
+      Left = 105
+      Top = 9
+      Width = 169
+      Height = 21
+      TabOrder = 0
+      OnExit = comboserverExit
+    end
+    object combodb: TComboBox
+      Left = 105
+      Top = 81
+      Width = 169
+      Height = 21
+      Enabled = False
+      TabOrder = 3
+    end
+    object log_memo: TMemo
+      Left = 9
+      Top = 225
+      Width = 464
+      Height = 103
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -12
+      Font.Name = 'Courier New'
+      Font.Style = []
+      ParentFont = False
+      ScrollBars = ssVertical
+      TabOrder = 11
     end
   end
+  object sql_memo: TMemo
+    Left = 510
+    Top = 8
+    Width = 352
+    Height = 104
+    TabOrder = 1
+    Visible = False
+  end
   object sunucu_baglan: TADOConnection
-    Left = 184
-    Top = 216
+    Left = 216
+    Top = 336
   end
   object sorgu: TADOQuery
     Connection = sunucu_baglan
     Parameters = <>
-    Left = 288
-    Top = 224
+    Left = 256
+    Top = 336
   end
   object AbZipper1: TAbZipper
     ArchiveProgressMeter = AbProgressBar1
@@ -362,7 +382,11 @@ object yedekfrm: Tyedekfrm
     AutoSave = True
     DOSMode = False
     StoreOptions = [soStripDrive, soStripPath, soRemoveDots, soRecurse, soFreshen, soReplace]
-    Left = 400
-    Top = 248
+    Left = 296
+    Top = 336
+  end
+  object diyalog1: TOpenDialog
+    Left = 328
+    Top = 336
   end
 end

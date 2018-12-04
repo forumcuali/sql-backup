@@ -4,8 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils,Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls,ExtCtrls,Data.Win.ADODB,
-  AbComCtrls, AbBase, AbBrowse, AbZBrows, AbZipper, Data.DB  ;
+  Dialogs, StdCtrls, ComCtrls,ExtCtrls,Data.Win.ADODB,DB,
+  AbComCtrls, AbBase, AbBrowse, AbZBrows, AbZipper, AdoInt, OleDB, ComObj, ActiveX,filectrl,
+  Vcl.Buttons;
 
 type
   Tyedekfrm = class(TForm)
@@ -17,16 +18,13 @@ type
     Label4: TLabel;
     Label1: TLabel;
     Label3: TLabel;
-    server_adi: TEdit;
     kullanici: TEdit;
     sifre: TEdit;
-    tablo_adi: TEdit;
     kayit_yeri1: TEdit;
     zipla: TCheckBox;
     kayit_yeri2: TEdit;
     kaydet: TButton;
     yukle: TButton;
-    log_memo: TMemo;
     Label11: TLabel;
     Panel1: TPanel;
     baglan: TButton;
@@ -36,15 +34,23 @@ type
     sunucu_baglan: TADOConnection;
     sorgu: TADOQuery;
     yardim: TButton;
-    sql_memo: TMemo;
     AbZipper1: TAbZipper;
     AbProgressBar1: TAbProgressBar;
     Label5: TLabel;
     Label6: TLabel;
+    comboserver: TComboBox;
+    combodb: TComboBox;
+    klasorbuton1: TSpeedButton;
+    diyalog1: TOpenDialog;
+    klasorbuton2: TSpeedButton;
+    log_memo: TMemo;
+    sql_memo: TMemo;
     procedure FormCreate(Sender: TObject);
+
     procedure tus_pasif;
     procedure tus_aktif;
     procedure tus_yedekle;
+
     procedure baglanClick(Sender: TObject);
     procedure kapatClick(Sender: TObject);
     procedure yukleClick(Sender: TObject);
@@ -55,11 +61,15 @@ type
     procedure yedekleClick(Sender: TObject);
     procedure ziplimi;
     function dosya_adi(gelen_ad:string):string;
-    procedure tablo_adiChange(Sender: TObject);
     procedure Panel2MouseEnter(Sender: TObject);
     procedure Label6Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormDestroy(Sender: TObject);
+    procedure klasorbuton1Click(Sender: TObject);
+    procedure kullaniciExit(Sender: TObject);
+    procedure sifreExit(Sender: TObject);
+    procedure klasorbuton2Click(Sender: TObject);
+    procedure comboserverExit(Sender: TObject);
   private
     { Private declarations }
 
@@ -70,6 +80,7 @@ type
 var
  yedekfrm: Tyedekfrm;
  UserName,PassWord,Server,baglanayar,mesaj:string;
+ klasor,klasorzip: String;
  implementation
 
 uses yardimprg,strutils ;
@@ -121,10 +132,95 @@ begin
 
 end;
 
+procedure sqlserverlistele(Names : TStrings);
+var
+RSCon: ADORecordsetConstruction;
+Rowset: IRowset;
+SourcesRowset: ISourcesRowset;
+SourcesRecordset: _Recordset;
+SourcesName, SourcesType: TField;
+
+function PtCreateADOObject(const ClassID: TGUID): IUnknown;
+var
+Status: HResult;
+FPUControlWord: Word;
+begin
+asm
+FNSTCW FPUControlWord
+end;
+Status := CoCreateInstance(
+CLASS_Recordset,
+nil,
+CLSCTX_INPROC_SERVER or CLSCTX_LOCAL_SERVER,
+IUnknown,
+Result);
+asm
+FNCLEX
+FLDCW FPUControlWord
+end;
+OleCheck(Status);
+end;
+begin
+SourcesRecordset := PtCreateADOObject(CLASS_Recordset) as _Recordset;
+RSCon := SourcesRecordset as ADORecordsetConstruction;
+SourcesRowset := CreateComObject(ProgIDToClassID('SQLOLEDB Enumerator')) as ISourcesRowset;
+OleCheck(SourcesRowset.GetSourcesRowset(nil, IRowset, 0, nil, IUnknown(Rowset)));
+RSCon.Rowset := RowSet;
+with TADODataSet.Create(nil) do
+try
+Recordset := SourcesRecordset;
+SourcesName := FieldByName('SOURCES_NAME'); { do not localize }
+SourcesType := FieldByName('SOURCES_TYPE'); { do not localize }
+Names.BeginUpdate;
+try
+while not EOF do
+begin
+if (SourcesType.AsInteger = DBSOURCETYPE_DATASOURCE) and (SourcesName.AsString <> '') then
+Names.Add(SourcesName.AsString);
+Next;
+end;
+finally
+Names.EndUpdate;
+end;
+finally
+Free;
+end;
+end;
+
+
 procedure Tyedekfrm.Panel2MouseEnter(Sender: TObject);
 begin
 sifre.PasswordChar := '*';
 sifre.Update;
+end;
+
+procedure Tyedekfrm.sifreExit(Sender: TObject);
+begin
+ if (trim(sifre.text)='') then
+    begin
+      Application.MessageBox('Þifre belirtmediniz'+#13+'Lütfen þifre Giriniz',
+                            'Hata',
+                            MB_OK+
+                            MB_ICONERROR+
+                            MB_DEFBUTTON1+
+                            MB_SYSTEMMODAL);
+                            sifre.SetFocus;
+                            exit;
+    end;
+end;
+
+procedure Tyedekfrm.klasorbuton1Click(Sender: TObject);
+begin
+  SelectDirectory('klasör seç', '', klasor);
+  kayit_yeri1.Text := klasor+'\'+dosya_adi(combodb.Text)+'.bak';
+
+  //ShowMessage(kayit_yeri2.Text+#13+kayit_yeri1.Text);
+end;
+
+procedure Tyedekfrm.klasorbuton2Click(Sender: TObject);
+begin
+ SelectDirectory('klasör seç', '', klasorzip);
+ kayit_yeri2.Text := klasorzip+'\'+dosya_adi(combodb.Text)+'.zip';
 end;
 
 procedure Tyedekfrm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -152,6 +248,10 @@ begin
   ziplimi;
   panel1.color:=clred;
   if fileexists('sql.log') then log_memo.Lines.LoadFromFile('sql.log');
+
+  comboserver.items.Clear;
+  sqlserverlistele(comboserver.Items);
+  sql_memo.Clear;
 end;
 
 
@@ -202,11 +302,11 @@ var
 
         try
     sorgu.sql.Clear;
-    sorgu.sql.Add(' BACKUP DATABASE ' + tablo_adi.Text);
+    sorgu.sql.Add(' BACKUP DATABASE ' + combodb.Text);
     sorgu.sql.Add(' TO DISK = '+''''+kayit_yeri1.Text+'''');
     sorgu.sql.Add(' WITH   INIT ,');
     sorgu.sql.Add(' NOUNLOAD ,');
-    sorgu.sql.Add(' NAME = N'+''''+tablo_adi.Text+' backup'+''''+',');
+    sorgu.sql.Add(' NAME = N'+''''+combodb.Text+' backup'+''''+',');
     sorgu.sql.Add(' NOSKIP ,');
     sorgu.sql.Add(' STATS = 10,');
     sorgu.sql.Add(' NOFORMAT');
@@ -232,7 +332,7 @@ var
       log_memo.Lines.Add('Sýkýþtýrma Ýþlemi Baþladý              '+ datetostr(date)+' ' + timetostr(time())) ;
       mesaj:='Sýkýþtýrma iþlemi yapýlýyor. Lütfen bekleyiniz.';
 
-   AbZipper1.Password:=tablo_adi.Text;
+   AbZipper1.Password:=combodb.Text;
    abzipper1.FileName := kayit_yeri2.Text;
    abzipper1.BaseDirectory := AnsiLeftStr(kayit_yeri2.text, 3);
    abzipper1.AddFiles(kayit_yeri1.Text,0);
@@ -255,14 +355,15 @@ begin
   exit;
   end
   else begin
+  sql_memo.Clear;
   sql_memo.Lines.LoadFromFile('sql.ini');
   log_memo.Lines.Add('Database ayar bilgileri Yüklenmiþtir.  '+ datetostr(date)+' ' + timetostr(time())) ;
   end;
 
-server_adi.Text := sql_memo.Lines[0]; // server name
+comboserver.Text := sql_memo.Lines[0]; // server name
 kullanici.Text  := sql_memo.Lines[1]; // kullanici adý
 sifre.Text      := DecryptStr(sql_memo.Lines[2],189); // sifre
-tablo_adi.Text  := sql_memo.Lines[3]; //database
+combodb.Text  := sql_memo.Lines[3]; //database
 kayit_yeri1.Text:= sql_memo.Lines[4]; //kayýt yeri
 kayit_yeri2.Text:= sql_memo.Lines[5];  //sýkýþtýrma yeri
 if sql_memo.Lines[6]= '0' then zipla.Checked:=true else zipla.Checked:=false;   // zýplama
@@ -283,10 +384,10 @@ end;
 
 procedure Tyedekfrm.kaydetClick(Sender: TObject);
 begin
-sql_memo.Lines.Add(server_adi.text);
+sql_memo.Lines.Add(comboserver.text);
 sql_memo.Lines.add(kullanici.Text);
 sql_memo.Lines.Add(EncryptStr(sifre.Text,189));
-sql_memo.Lines.Add(tablo_adi.Text);
+sql_memo.Lines.Add(combodb.Text);
 sql_memo.Lines.Add(kayit_yeri1.Text);
 sql_memo.Lines.Add(kayit_yeri2.Text);
 if zipla.Checked then sql_memo.Lines.Add('0') else sql_memo.Lines.Add('1');
@@ -295,26 +396,35 @@ log_memo.Lines.Add('Ayarlar kaydedilmiþtir.                '+ datetostr(date)+' 
 sql_memo.Clear;
 end;
 
+procedure Tyedekfrm.kullaniciExit(Sender: TObject);
+begin
+if (trim(kullanici.Text)=EmptyStr) then
+    begin
+    Application.MessageBox('Kullanýcý Adý Belirtilmemiþ'+#13+'Lütfen Kullanýcý Adýný Giriniz',
+                            'Hata',
+                            MB_OK+
+                            MB_ICONERROR+
+                            MB_DEFBUTTON1+
+                            MB_SYSTEMMODAL);
+                            kullanici.SetFocus;
+                            exit;
+    end
+end;
+
+
 procedure Tyedekfrm.Label6Click(Sender: TObject);
 begin
 sifre.PasswordChar := #0;
 sifre.Update;
 end;
 
-procedure Tyedekfrm.tablo_adiChange(Sender: TObject);
-begin
-kayit_yeri2.Text := ExtractFileDrive(Application.ExeName)+'\'+dosya_adi(tablo_adi.Text)+'.zip';
-kayit_yeri1.Text := ExtractFileDrive(Application.ExeName)+'\'+dosya_adi(tablo_adi.Text)+'.bak';
-
-end;
-
 procedure Tyedekfrm.temizleClick(Sender: TObject);
 begin
 tus_pasif;
-server_adi.Text := '';
+comboserver.Text := '';
 kullanici.Text  := '';
 sifre.Text      := '';
-tablo_adi.Text  := '';
+combodb.Text  := '';
 kayit_yeri1.Text:= '';
 kayit_yeri2.Text:= '';
 zipla.Checked:=false;
@@ -343,13 +453,14 @@ begin
  end;
 
  procedure Tyedekfrm.baglanClick(Sender: TObject);
-
+var
+dbquery:TADOQuery;
 begin
 sunucu_baglan.Connected := False; // database açýksa kapat
 tus_aktif;
 username:=kullanici.Text;
 password:= sifre.Text;
-server:=server_adi.Text;
+server:=comboserver.Text;//server_adi.Text;
 baglanayar:= 'Provider=SQLOLEDB.1;Persist Security Info=False;' +
   'User ID=%s;Password=%s;Data Source=%s;Use Procedure for Prepare=1;' +
   'Auto Translate=True;Packet Size=4096;Use Encryption for Data=False;'+
@@ -367,6 +478,26 @@ log_memo.Lines.Add('Sunucu Baðlantýsý Yapýlýyor.           '+ datetostr(date)+' 
     sunucu_baglan.Connected := True;
     log_memo.Lines.Add('Sunucu Baðlantýsý Yapýldý.             ' + datetostr(date)+' ' + timetostr(time())) ;
     panel1.Color:=cllime;
+
+    dbquery:=TADOQuery.Create(self);
+    with dbquery do
+     begin
+        connection:=sunucu_baglan;
+        close;
+        sql.Clear;
+        sql.Add('SELECT name FROM sys.databases WHERE name NOT IN (''master'',''model'',''msdb'',''tempdb'')');
+        open;
+        active;
+        combodb.Enabled:=true;
+        while not eof do
+          begin
+            combodb.items.Add(dbquery.fieldbyname('name').AsString);
+            next;
+          end;
+        combodb.itemindex:=1;
+
+     end;
+
   except
        yedekfrm.tus_pasif;
     log_memo.Lines.Add('Sunucu Baðlantýsýnda hata oluþtu.      ' + datetostr(date)+' ' + timetostr(time())) ;
@@ -383,11 +514,28 @@ if not zipla.Checked then begin
     label1.Hide;
     label5.Hide;
     AbProgressBar1.hide;
+    klasorbuton2.Hide;
         end else begin
     kayit_yeri2.Show;
     label1.Show;
     label5.Show;
     AbProgressBar1.Show;
+    klasorbuton2.Show;
+    end;
+end;
+
+procedure Tyedekfrm.comboserverExit(Sender: TObject);
+begin
+if (trim(comboserver.text)=EmptyStr) then
+    begin
+      Application.MessageBox('Server seçmediniz'+#13+'Lütfen SQLserver seçin',
+                            'Hata',
+                            MB_OK+
+                            MB_ICONERROR+
+                            MB_DEFBUTTON1+
+                            MB_SYSTEMMODAL);
+                            comboserver.SetFocus;
+                            exit;
     end;
 end;
 
