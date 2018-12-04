@@ -220,7 +220,7 @@ end;
 procedure Tyedekfrm.klasorbuton2Click(Sender: TObject);
 begin
  SelectDirectory('klasör seç', '', klasorzip);
- kayit_yeri2.Text := klasorzip+'\'+dosya_adi(combodb.Text)+'.zip';
+ kayit_yeri2.Text := klasorzip+dosya_adi(combodb.Text)+'.zip';
 end;
 
 procedure Tyedekfrm.FormClose(Sender: TObject; var Action: TCloseAction);
