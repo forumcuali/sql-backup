@@ -212,6 +212,9 @@ end;
 procedure Tyedekfrm.klasorbuton1Click(Sender: TObject);
 begin
   SelectDirectory('klasör seç', '', klasor);
+if klasor='C:\' then
+  kayit_yeri1.Text := klasor+dosya_adi(combodb.Text)+'.bak'
+else
   kayit_yeri1.Text := klasor+'\'+dosya_adi(combodb.Text)+'.bak';
 
   //ShowMessage(kayit_yeri2.Text+#13+kayit_yeri1.Text);
@@ -220,7 +223,10 @@ end;
 procedure Tyedekfrm.klasorbuton2Click(Sender: TObject);
 begin
  SelectDirectory('klasör seç', '', klasorzip);
- kayit_yeri2.Text := klasorzip+dosya_adi(combodb.Text)+'.zip';
+  if klasorzip='C:\' then
+    kayit_yeri2.Text := klasorzip+dosya_adi(combodb.Text)+'.zip'
+  else
+  kayit_yeri2.Text := klasorzip+'\'+dosya_adi(combodb.Text)+'.zip'
 end;
 
 procedure Tyedekfrm.FormClose(Sender: TObject; var Action: TCloseAction);

@@ -5,7 +5,7 @@ object yedekfrm: Tyedekfrm
   BorderStyle = bsSingle
   Caption = #199#305'nar Bilgisayar SQL Yedek Alma Program'#305
   ClientHeight = 380
-  ClientWidth = 505
+  ClientWidth = 506
   Color = 15259054
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
